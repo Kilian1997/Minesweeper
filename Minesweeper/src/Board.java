@@ -67,10 +67,16 @@ public class Board implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		System.out.println(e.getActionCommand());
-		System.out.println(e.getSource());
-		System.out.println(e.toString());
-		buttons.get(0).setEnabled(false);
+		
+		for(JButton b : buttons) {
+			if(e.getSource().equals(b)) {
+				b.setText("ich wurde gedrückt");
+			}
+		}
+//		System.out.println(e.getActionCommand());
+//		System.out.println(e.getSource());
+//		System.out.println(e.toString());
+//		buttons.get(0).setEnabled(false);
 //		panel.remove(0);
 //		frame.repaint();
 //		frame.remove(panel);
