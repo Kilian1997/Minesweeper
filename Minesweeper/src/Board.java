@@ -4,15 +4,18 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.LinkedList;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 
-public class Board implements ActionListener {
+public class Board implements MouseListener {
 	
 	private boolean [][] realBoard;
 	LinkedList<Field> buttons;
@@ -42,7 +45,7 @@ public class Board implements ActionListener {
 				buttons.add(new Field(x+1,y+1,realBoard[x][y])); // Muss noch angepasst werden an die Klasse Field 
 				//buttons.add(new JButton("Normal"));
 				panel.add(buttons.get(i));
-				buttons.get(i).addActionListener(this);
+				buttons.get(i).addMouseListener(this);
 				buttons.get(i).setFont(new Font("Monospaced", Font.ITALIC , 12));
 				if(x<size-1) {
 					x++;
@@ -137,24 +140,24 @@ public class Board implements ActionListener {
 	}
 
 	@Override
-	public void actionPerformed(ActionEvent e) {
-		
-		for(Field b : buttons) {
-			if(e.getSource().equals(b)) {
-				b.setEnabled(false);
-				System.out.println("x: "+b.getPositionX()+", y: "+b.getPositionY());
-				if(realBoard[b.getPositionX()-1][b.getPositionY()-1]) {
-					
-					b.setText("Bombe");
-				}else {
-					b.setText(""+bombsNextby(b.getPositionX()-1, b.getPositionY()-1));
-					if(bombsNextby(b.getPositionX()-1, b.getPositionY()-1)==0) {
-						clickAllAround(b.getPositionX(), b.getPositionY());
-					}
-				}
-				
-			}
-		}
+//	public void actionPerformed(ActionEvent e) {
+//		
+//		for(Field b : buttons) {
+//			if(e.getSource().equals(b)) {
+//				b.setEnabled(false);
+//				System.out.println("x: "+b.getPositionX()+", y: "+b.getPositionY());
+//				if(realBoard[b.getPositionX()-1][b.getPositionY()-1]) {
+//					
+//					b.setText("Bombe");
+//				}else {
+//					b.setText(""+bombsNextby(b.getPositionX()-1, b.getPositionY()-1));
+//					if(bombsNextby(b.getPositionX()-1, b.getPositionY()-1)==0) {
+//						clickAllAround(b.getPositionX(), b.getPositionY());
+//					}
+//				}
+//				
+//			}
+//		}
 //		System.out.println(e.getActionCommand());
 //		System.out.println(e.getSource());
 //		System.out.println(e.toString());
@@ -164,6 +167,47 @@ public class Board implements ActionListener {
 //		frame.remove(panel);
 //		frame.add(panel);
 //		frame.repaint();
+//	}
+
+	
+	public void mouseClicked(MouseEvent e) {
+		
+		
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		for(Field b : buttons) {
+			if(e.getSource().equals(b)&& b.isEnabled()) {
+				b.setEnabled(false);
+				if(SwingUtilities.isRightMouseButton(e)) {
+					System.out.println("Rechtsklick");
+				}else {
+					System.out.println("linkslick");
+				}
+			}
+		}
+		
 	}
 
 }
