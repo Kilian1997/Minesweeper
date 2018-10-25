@@ -34,12 +34,15 @@ public class Board implements ActionListener {
 			panel.setBackground(Color.white);
 			panel.setLayout(new GridLayout(size,size));
 			buttons = new LinkedList<JButton>();
-			for(int i=0;i<size*size;i++) {
-				buttons.add(new JButton(i+""));
+
+			for(int i=0;i<size*size;i++) { // zwei forschleifen! Überdenken
+				System.out.println("Bombssss");
+				//buttons.add(new Field(i,j,realBoard[i][j],"hi")); // Muss noch angepasst werden an die Klasse Field 
+				buttons.add(new JButton("ups"));
 				panel.add(buttons.get(i));
 				buttons.get(i).addActionListener(this);
-				
 			}
+			
 			frame.add(panel,BorderLayout.CENTER);
 			frame.setVisible(true);
 			

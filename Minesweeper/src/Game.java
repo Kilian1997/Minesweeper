@@ -2,7 +2,7 @@
 public class Game {
 	
 	public static void main(String[] args) {
-		Board board = new Board(10, 20);
+		Board board = new Board(2, 0);
 	}
 
 }
