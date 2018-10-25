@@ -13,26 +13,20 @@ public class Field extends JButton{
 		this.isBomb=bomb;
 	}
 	
-	public Field (int x,int y, boolean bomb, String titel) {
-		super(titel);
-		this.x = x;
-		this.y=y;
-		this.isBomb=bomb;
-	}
 
-	public int getX() {
+	public int getPositionX() {
 		return x;
 	}
 
-	public void setX(int x) {
+	public void setPositionX(int x) {
 		this.x = x;
 	}
 
-	public int getY() {
+	public int getPositionY() {
 		return y;
 	}
 
-	public void setY(int y) {
+	public void setPositionY(int y) {
 		this.y = y;
 	}
 
