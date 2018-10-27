@@ -199,11 +199,22 @@ public class Board implements MouseListener {
 	public void mouseReleased(MouseEvent e) {
 		for(Field b : buttons) {
 			if(e.getSource().equals(b)&& b.isEnabled()) {
-				b.setEnabled(false);
+				
 				if(SwingUtilities.isRightMouseButton(e)) {
-					System.out.println("Rechtsklick");
+					if(b.getText().equals("B")) {
+						b.setText("");
+					}else {
+						b.setText("B");
+					}
+					
 				}else {
-					System.out.println("linkslick");
+					b.setEnabled(false);
+					if(b.isBomb()) {
+						b.setText("BOOM");
+					}else {
+						b.setText(bombsNextby(b.getPositionX()-1, b.getPositionY()-1)+"");
+					}
+					
 				}
 			}
 		}
