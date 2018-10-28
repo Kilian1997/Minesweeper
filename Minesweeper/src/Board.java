@@ -3,6 +3,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Image;
+import java.awt.Insets;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.IOException;
@@ -67,6 +68,7 @@ public class Board implements MouseListener {
 			panel.add(buttons.get(i));
 			buttons.get(i).addMouseListener(this);
 			buttons.get(i).setFont(new Font("Monospaced", Font.ITALIC, 12));
+			buttons.get(i).setMargin(new Insets(0, 0, 0, 0));
 			if (x < realBoard.length - 1) {
 				x++;
 			} else {
@@ -284,7 +286,7 @@ public class Board implements MouseListener {
 						}		
 					}
 
-				} else {
+				} else if(b.getIcon()==null){
 					pressField(b);
 				}
 			}
