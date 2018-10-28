@@ -23,9 +23,8 @@ public class Board implements MouseListener {
 		if (bombs > size * size) {
 			throw new IllegalArgumentException("Mehr Bomben als Felder.");
 		} else {
-			realBoard = new boolean[size][size];
 			numberOfBombs = bombs;
-
+			realBoard = new boolean[size][size];
 			frame = new JFrame("Kilians Minesweeper");
 			frame.setSize(600, 600);
 			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -48,6 +47,7 @@ public class Board implements MouseListener {
 		if (panel != null) {
 			frame.remove(panel);
 		}
+		realBoard = new boolean[realBoard.length][realBoard.length];
 		placeBombs(numberOfBombs);
 		panel = new JPanel();
 		panel.setBackground(Color.white);
@@ -140,12 +140,31 @@ public class Board implements MouseListener {
 			}
 		}
 	}
+	
+	private void loose() {
+		for(Field f: buttons) {
+			f.removeMouseListener(this);
+			if(f.isBomb()) {
+				
+				f.setText("BOMB");
+			}
+		}
+		int again = JOptionPane.showConfirmDialog(null,
+				"Leider Verloren\nWollen Sie es nochmal versuchen?", "Verloren",
+				JOptionPane.YES_NO_OPTION);
+		if (again == 0) {
+			for (Field f : buttons) {
+				f.removeMouseListener(this);
+			}
+			createAndAddPanel();
+		}
+	}
 
 	private void pressField(Field field) {
 		if (field.isEnabled()) {
 			field.setEnabled(false);
 			if (field.isBomb()) {
-				field.setText("BOOM");
+				loose();
 			} else {
 				field.setText(bombsNextby(field.getPositionX() - 1, field.getPositionY() - 1) + "");
 				if (field.getText().equals("0")) {
