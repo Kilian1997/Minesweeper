@@ -2,13 +2,19 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.IOException;
 import java.util.LinkedList;
 
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
 public class Board implements MouseListener {
@@ -112,7 +118,7 @@ public class Board implements MouseListener {
 		return result;
 	}
 
-	private void clickAllAround(int x, int y) {
+	private void clickAllAround(int x, int y){
 		for (Field f : buttons) {
 			if (f.getPositionX() + 1 == x && f.getPositionY() == y) {
 				pressField(f);
@@ -142,11 +148,20 @@ public class Board implements MouseListener {
 	}
 	
 	private void loose() {
+		System.out.println(frame.getHeight()/realBoard.length);
+		System.out.println(frame.getWidth()/realBoard.length);
 		for(Field f: buttons) {
 			f.removeMouseListener(this);
 			if(f.isBomb()) {
-				
-				f.setText("BOMB");
+				 Image img;
+				try {
+					img = ImageIO.read(getClass().getResource("pictures/Bombe.png"));
+					 f.setIcon(new ImageIcon(img.getScaledInstance(Math.min(frame.getHeight(), frame.getWidth())/realBoard.length, Math.min(frame.getHeight(), frame.getWidth())/realBoard.length, Image.SCALE_FAST)));
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}		 
+				   
 			}
 		}
 		int again = JOptionPane.showConfirmDialog(null,
@@ -160,7 +175,7 @@ public class Board implements MouseListener {
 		}
 	}
 
-	private void pressField(Field field) {
+	private void pressField(Field field){
 		if (field.isEnabled()) {
 			field.setEnabled(false);
 			if (field.isBomb()) {
@@ -257,10 +272,16 @@ public class Board implements MouseListener {
 			if (e.getSource().equals(b) && b.isEnabled()) {
 
 				if (SwingUtilities.isRightMouseButton(e)) {
-					if (b.getText().equals("B")) {
-						b.setText("");
+					if (b.getIcon()!=null) {
+						b.setIcon(null);
 					} else {
-						b.setText("B");
+						try {
+							Image img = ImageIO.read(getClass().getResource("pictures/Fahne.png"));
+							 b.setIcon(new ImageIcon(img.getScaledInstance((int)((Math.min(frame.getHeight(), frame.getWidth())/realBoard.length)/1.75), (int)((Math.min(frame.getHeight(), frame.getWidth())/realBoard.length)/1.75), Image.SCALE_FAST)));
+						} catch (IOException error) {
+							// TODO Auto-generated catch block
+							error.printStackTrace();
+						}		
 					}
 
 				} else {
