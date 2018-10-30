@@ -1,4 +1,6 @@
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.IOException;
@@ -14,6 +16,9 @@ public class Board implements MouseListener {
 	private JPanel panel;
 	private int numberOfBombs;
 	private boolean bombsGenerated;
+	private JLabel label;
+	private int bombsLeft;
+	private JMenuBar menuBar;
 
 	public Board(int size, int bombs) {
 		if (bombs + 9 > size * size) {
@@ -27,6 +32,20 @@ public class Board implements MouseListener {
 			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			frame.setResizable(true);
 			frame.setLocationRelativeTo(null);
+			menuBar = new JMenuBar();
+			JMenu menu = new JMenu("Optionen");
+			menuBar.add(menu);
+			JMenuItem item = new JMenuItem("Neustart");
+			item.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					restart();
+					
+				}
+			});
+			menu.add(item);
+			frame.setJMenuBar(menuBar);
 
 			createAndAddPanel();
 
@@ -41,8 +60,9 @@ public class Board implements MouseListener {
 	}
 
 	private void createAndAddPanel() {
-		if (panel != null) {
+		if (panel != null || label !=null) {
 			frame.remove(panel);
+			frame.remove(label);
 		}
 		realBoard = new boolean[realBoard.length][realBoard.length];
 		// placeBombs(numberOfBombs);
@@ -66,7 +86,12 @@ public class Board implements MouseListener {
 				y++;
 			}
 		}
+		label = new JLabel("Noch zu findende Bomben:   " +numberOfBombs);
+		bombsLeft = numberOfBombs;
+		label.setBackground(Color.WHITE);
+		frame.add(label, BorderLayout.SOUTH);
 		frame.add(panel, BorderLayout.CENTER);
+		
 		frame.setVisible(true);
 	}
 
@@ -159,6 +184,14 @@ public class Board implements MouseListener {
 			}
 		}
 	}
+	
+	private void restart () {
+		for (Field f : buttons) {
+			f.removeMouseListener(this);
+		}
+		bombsGenerated = false;
+		createAndAddPanel();
+	}
 
 	private void loose() {
 		for (Field f : buttons) {
@@ -168,8 +201,8 @@ public class Board implements MouseListener {
 				try {
 					img = ImageIO.read(getClass().getResource("pictures/Bombe.png"));
 					f.setIcon(new ImageIcon(img.getScaledInstance(
-							Math.min(frame.getHeight(), frame.getWidth()) / realBoard.length,
-							Math.min(frame.getHeight(), frame.getWidth()) / realBoard.length, Image.SCALE_FAST)));
+							(int)((Math.min(frame.getHeight(), frame.getWidth()) / realBoard.length)/1.25),
+							(int)((Math.min(frame.getHeight(), frame.getWidth()) / realBoard.length)/1.25), Image.SCALE_FAST)));
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -180,11 +213,7 @@ public class Board implements MouseListener {
 		int again = JOptionPane.showConfirmDialog(null, "Leider Verloren\nWollen Sie es nochmal versuchen?", "Verloren",
 				JOptionPane.YES_NO_OPTION);
 		if (again == 0) {
-			for (Field f : buttons) {
-				f.removeMouseListener(this);
-			}
-			bombsGenerated = false;
-			createAndAddPanel();
+			restart();
 		}
 	}
 
@@ -205,14 +234,11 @@ public class Board implements MouseListener {
 				int again = JOptionPane.showConfirmDialog(null,
 						"Herzlichen Glückwunsch, Sie haben gewonnen!\nWollen Sie nocheinmal spielen?", "Gewonnen",
 						JOptionPane.YES_NO_OPTION);
-				if (again == 1) {
-					System.exit(0);
-				} else {
-					for (Field f : buttons) {
-						f.removeMouseListener(this);
-					}
-					this.bombsGenerated = false;
-					createAndAddPanel();
+				for (Field f : buttons) {
+					f.removeMouseListener(this);
+				}
+				if (again == 0) {
+					restart();
 				}
 			}
 		}
@@ -276,25 +302,33 @@ public class Board implements MouseListener {
 
 	@Override
 	public void mousePressed(MouseEvent e) {
+		
+
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
 		for (Field b : buttons) {
 			if (e.getSource().equals(b) && b.isEnabled()) {
 
 				if (SwingUtilities.isRightMouseButton(e)) {
 					if (b.getIcon() != null) {
+						bombsLeft++;
 						b.setIcon(null);
-					} else {
+					} else if(bombsLeft>0) {
 						try {
 							Image img = ImageIO.read(getClass().getResource("pictures/Fahne.png"));
 							b.setIcon(new ImageIcon(img.getScaledInstance(
 									(int) ((Math.min(frame.getHeight(), frame.getWidth()) / realBoard.length) / 1.75),
 									(int) ((Math.min(frame.getHeight(), frame.getWidth()) / realBoard.length) / 1.75),
 									Image.SCALE_FAST)));
+							bombsLeft--;
 						} catch (IOException error) {
 							// TODO Auto-generated catch block
 							error.printStackTrace();
 						}
 					}
-
+					label.setText("Noch zu findende Bomben:   "+ bombsLeft);
 				} else if (b.getIcon() == null) {
 					if (!bombsGenerated) {
 						placeBombs(numberOfBombs, b);
@@ -304,12 +338,6 @@ public class Board implements MouseListener {
 				}
 			}
 		}
-
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent e) {
-
 	}
 
 }
