@@ -1,22 +1,10 @@
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.GridLayout;
-import java.awt.Image;
-import java.awt.Insets;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.IOException;
 import java.util.LinkedList;
-
 import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 
 public class Board implements MouseListener {
 
@@ -25,11 +13,13 @@ public class Board implements MouseListener {
 	private JFrame frame;
 	private JPanel panel;
 	private int numberOfBombs;
+	private boolean bombsGenerated;
 
 	public Board(int size, int bombs) {
 		if (bombs > size * size) {
 			throw new IllegalArgumentException("Mehr Bomben als Felder.");
 		} else {
+			bombsGenerated=false;
 			numberOfBombs = bombs;
 			realBoard = new boolean[size][size];
 			frame = new JFrame("Kilians Minesweeper");
@@ -55,7 +45,7 @@ public class Board implements MouseListener {
 			frame.remove(panel);
 		}
 		realBoard = new boolean[realBoard.length][realBoard.length];
-		placeBombs(numberOfBombs);
+		//placeBombs(numberOfBombs);
 		panel = new JPanel();
 		panel.setBackground(Color.white);
 		panel.setLayout(new GridLayout(realBoard.length, realBoard.length));
@@ -79,14 +69,26 @@ public class Board implements MouseListener {
 		frame.add(panel, BorderLayout.CENTER);
 		frame.setVisible(true);
 	}
-
-	public void placeBombs(int numberOfBombs) {
+	
+	private void placeBombs(int numberOfBombs, Field f) {
+		bombsGenerated=true;
 		while (numberOfBombs > 0) {
 			int p1 = (int) (Math.random() * realBoard.length);
 			int p2 = (int) (Math.random() * realBoard.length);
-			if (realBoard[p1][p2] == false) {
+			if (realBoard[p1][p2] == false && f.getPositionX()!=p1 && f.getPositionY()!=p2) { // funzt nicht!!!!!
 				realBoard[p1][p2] = true;
 				numberOfBombs--;
+			}
+		}
+		int x = 0;
+		int y = 0;
+		for (int i = 0; i < realBoard.length * realBoard.length; i++) {
+			buttons.get(i).setBomb(realBoard[x][y]);
+			if (x < realBoard.length - 1) {
+				x++;
+			} else {
+				x = 0;
+				y++;
 			}
 		}
 	}
@@ -150,8 +152,6 @@ public class Board implements MouseListener {
 	}
 	
 	private void loose() {
-		System.out.println(frame.getHeight()/realBoard.length);
-		System.out.println(frame.getWidth()/realBoard.length);
 		for(Field f: buttons) {
 			f.removeMouseListener(this);
 			if(f.isBomb()) {
@@ -173,6 +173,7 @@ public class Board implements MouseListener {
 			for (Field f : buttons) {
 				f.removeMouseListener(this);
 			}
+			bombsGenerated=false;
 			createAndAddPanel();
 		}
 	}
@@ -200,6 +201,7 @@ public class Board implements MouseListener {
 					for (Field f : buttons) {
 						f.removeMouseListener(this);
 					}
+					this.bombsGenerated=false;
 					createAndAddPanel();
 				}
 			}
@@ -264,12 +266,6 @@ public class Board implements MouseListener {
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent e) {
 		for (Field b : buttons) {
 			if (e.getSource().equals(b) && b.isEnabled()) {
 
@@ -287,11 +283,21 @@ public class Board implements MouseListener {
 					}
 
 				} else if(b.getIcon()==null){
+					if(!bombsGenerated) {
+						placeBombs(numberOfBombs,b);
+					}
 					pressField(b);
+					
 				}
 			}
 		}
 
+
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		
 	}
 
 }
