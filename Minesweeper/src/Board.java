@@ -16,10 +16,10 @@ public class Board implements MouseListener {
 	private boolean bombsGenerated;
 
 	public Board(int size, int bombs) {
-		if (bombs > size * size) {
+		if (bombs + 9 > size * size) {
 			throw new IllegalArgumentException("Mehr Bomben als Felder.");
 		} else {
-			bombsGenerated=false;
+			bombsGenerated = false;
 			numberOfBombs = bombs;
 			realBoard = new boolean[size][size];
 			frame = new JFrame("Kilians Minesweeper");
@@ -45,7 +45,7 @@ public class Board implements MouseListener {
 			frame.remove(panel);
 		}
 		realBoard = new boolean[realBoard.length][realBoard.length];
-		//placeBombs(numberOfBombs);
+		// placeBombs(numberOfBombs);
 		panel = new JPanel();
 		panel.setBackground(Color.white);
 		panel.setLayout(new GridLayout(realBoard.length, realBoard.length));
@@ -69,13 +69,22 @@ public class Board implements MouseListener {
 		frame.add(panel, BorderLayout.CENTER);
 		frame.setVisible(true);
 	}
-	
+
 	private void placeBombs(int numberOfBombs, Field f) {
-		bombsGenerated=true;
+		bombsGenerated = true;
 		while (numberOfBombs > 0) {
 			int p1 = (int) (Math.random() * realBoard.length);
 			int p2 = (int) (Math.random() * realBoard.length);
-			if (realBoard[p1][p2] == false && f.getPositionX()!=p1 && f.getPositionY()!=p2) { // funzt nicht!!!!!
+			if (realBoard[p1][p2] == false && !(p1 == f.getPositionX() - 1 && p2 == f.getPositionY() - 1)
+					&& !(p1 == f.getPositionX() && p2 == f.getPositionY() - 1)
+					&& !(p1 == f.getPositionX() && p2 == f.getPositionY())
+					&& !(p1 == f.getPositionX() && p2 == f.getPositionY() - 2)
+					&& !(p1 == f.getPositionX()-2 && p2 == f.getPositionY() - 1)
+					&& !(p1 == f.getPositionX()-2 && p2 == f.getPositionY() )
+					&& !(p1 == f.getPositionX()-2 && p2 == f.getPositionY() - 2)
+					&& !(p1 == f.getPositionX() - 1 && p2 == f.getPositionY())
+					&& !(p1 == f.getPositionX() - 1 && p2 == f.getPositionY() - 2)
+					) { // funzt nicht!!!!!
 				realBoard[p1][p2] = true;
 				numberOfBombs--;
 			}
@@ -122,7 +131,7 @@ public class Board implements MouseListener {
 		return result;
 	}
 
-	private void clickAllAround(int x, int y){
+	private void clickAllAround(int x, int y) {
 		for (Field f : buttons) {
 			if (f.getPositionX() + 1 == x && f.getPositionY() == y) {
 				pressField(f);
@@ -150,35 +159,36 @@ public class Board implements MouseListener {
 			}
 		}
 	}
-	
+
 	private void loose() {
-		for(Field f: buttons) {
+		for (Field f : buttons) {
 			f.removeMouseListener(this);
-			if(f.isBomb()) {
-				 Image img;
+			if (f.isBomb()) {
+				Image img;
 				try {
 					img = ImageIO.read(getClass().getResource("pictures/Bombe.png"));
-					 f.setIcon(new ImageIcon(img.getScaledInstance(Math.min(frame.getHeight(), frame.getWidth())/realBoard.length, Math.min(frame.getHeight(), frame.getWidth())/realBoard.length, Image.SCALE_FAST)));
+					f.setIcon(new ImageIcon(img.getScaledInstance(
+							Math.min(frame.getHeight(), frame.getWidth()) / realBoard.length,
+							Math.min(frame.getHeight(), frame.getWidth()) / realBoard.length, Image.SCALE_FAST)));
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-				}		 
-				   
+				}
+
 			}
 		}
-		int again = JOptionPane.showConfirmDialog(null,
-				"Leider Verloren\nWollen Sie es nochmal versuchen?", "Verloren",
+		int again = JOptionPane.showConfirmDialog(null, "Leider Verloren\nWollen Sie es nochmal versuchen?", "Verloren",
 				JOptionPane.YES_NO_OPTION);
 		if (again == 0) {
 			for (Field f : buttons) {
 				f.removeMouseListener(this);
 			}
-			bombsGenerated=false;
+			bombsGenerated = false;
 			createAndAddPanel();
 		}
 	}
 
-	private void pressField(Field field){
+	private void pressField(Field field) {
 		if (field.isEnabled()) {
 			field.setEnabled(false);
 			if (field.isBomb()) {
@@ -201,7 +211,7 @@ public class Board implements MouseListener {
 					for (Field f : buttons) {
 						f.removeMouseListener(this);
 					}
-					this.bombsGenerated=false;
+					this.bombsGenerated = false;
 					createAndAddPanel();
 				}
 			}
@@ -270,34 +280,36 @@ public class Board implements MouseListener {
 			if (e.getSource().equals(b) && b.isEnabled()) {
 
 				if (SwingUtilities.isRightMouseButton(e)) {
-					if (b.getIcon()!=null) {
+					if (b.getIcon() != null) {
 						b.setIcon(null);
 					} else {
 						try {
 							Image img = ImageIO.read(getClass().getResource("pictures/Fahne.png"));
-							 b.setIcon(new ImageIcon(img.getScaledInstance((int)((Math.min(frame.getHeight(), frame.getWidth())/realBoard.length)/1.75), (int)((Math.min(frame.getHeight(), frame.getWidth())/realBoard.length)/1.75), Image.SCALE_FAST)));
+							b.setIcon(new ImageIcon(img.getScaledInstance(
+									(int) ((Math.min(frame.getHeight(), frame.getWidth()) / realBoard.length) / 1.75),
+									(int) ((Math.min(frame.getHeight(), frame.getWidth()) / realBoard.length) / 1.75),
+									Image.SCALE_FAST)));
 						} catch (IOException error) {
 							// TODO Auto-generated catch block
 							error.printStackTrace();
-						}		
+						}
 					}
 
-				} else if(b.getIcon()==null){
-					if(!bombsGenerated) {
-						placeBombs(numberOfBombs,b);
+				} else if (b.getIcon() == null) {
+					if (!bombsGenerated) {
+						placeBombs(numberOfBombs, b);
 					}
 					pressField(b);
-					
+
 				}
 			}
 		}
-
 
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		
+
 	}
 
 }
