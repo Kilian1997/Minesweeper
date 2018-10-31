@@ -50,9 +50,9 @@ public class Board implements MouseListener {
 			item2.addActionListener(new MenuListener());
 			
 			ButtonGroup group = new ButtonGroup();
-			JRadioButtonMenuItem modusEinfach = new JRadioButtonMenuItem("Einfach",true);
-			JRadioButtonMenuItem modusMittel = new JRadioButtonMenuItem("Mittel");
-			JRadioButtonMenuItem modusSchwer = new JRadioButtonMenuItem("Schwer");
+			JRadioButtonMenuItem modusEinfach = new JRadioButtonMenuItem("Einfach (8x8)",true);
+			JRadioButtonMenuItem modusMittel = new JRadioButtonMenuItem("Mittel (14x14)");
+			JRadioButtonMenuItem modusSchwer = new JRadioButtonMenuItem("Schwer (20x20)");
 			modusEinfach.addActionListener(new MenuListener());
 			modusMittel.addActionListener(new MenuListener());
 			modusSchwer.addActionListener(new MenuListener());
@@ -364,13 +364,13 @@ public class Board implements MouseListener {
 					restart();
 				}else if(((JMenuItem)e.getSource()).getText().equals("Spiel beenden")){
 					System.exit(0);
-				}else if(((JMenuItem)e.getSource()).getText().equals("Einfach")){
+				}else if(((JMenuItem)e.getSource()).getText().equals("Einfach (8x8)")){
 					nextGameSize=8;
 					nextGameBombs=10;
-				}else if(((JMenuItem)e.getSource()).getText().equals("Mittel")){
-					nextGameSize=16;
-					nextGameBombs=40;
-				}else if(((JMenuItem)e.getSource()).getText().equals("Schwer")){
+				}else if(((JMenuItem)e.getSource()).getText().equals("Mittel (14x14)")){
+					nextGameSize=14;
+					nextGameBombs=32;
+				}else if(((JMenuItem)e.getSource()).getText().equals("Schwer (20x20)")){
 					nextGameSize=20;
 					nextGameBombs=80;
 				}
