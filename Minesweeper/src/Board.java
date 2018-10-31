@@ -19,11 +19,15 @@ public class Board implements MouseListener {
 	private JLabel label;
 	private int bombsLeft;
 	private JMenuBar menuBar;
+	private int nextGameSize;
+	private int nextGameBombs;
 
 	public Board(int size, int bombs) {
 		if (bombs + 9 > size * size) {
 			throw new IllegalArgumentException("Mehr Bomben als Felder.");
 		} else {
+			nextGameSize=size;
+			nextGameBombs=bombs;
 			bombsGenerated = false;
 			numberOfBombs = bombs;
 			realBoard = new boolean[size][size];
@@ -33,18 +37,35 @@ public class Board implements MouseListener {
 			frame.setResizable(true);
 			frame.setLocationRelativeTo(null);
 			menuBar = new JMenuBar();
-			JMenu menu = new JMenu("Optionen");
+			JMenu menu = new JMenu("Game");
 			menuBar.add(menu);
 			JMenuItem item = new JMenuItem("Neustart");
-			item.addActionListener(new ActionListener() {
-				
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					restart();
-					
-				}
-			});
+			JMenuItem item2 = new JMenuItem("Spiel beenden");
+			JMenu menuInMenu = new JMenu("Modus");
+			
+//			JMenuItem item2 = new JMenuItem("Schriftgröße");
+//			item2.add (new JSlider(8,45,20));
+			item.addActionListener(new MenuListener());
+			
+			item2.addActionListener(new MenuListener());
+			
+			ButtonGroup group = new ButtonGroup();
+			JRadioButtonMenuItem modusEinfach = new JRadioButtonMenuItem("Einfach",true);
+			JRadioButtonMenuItem modusMittel = new JRadioButtonMenuItem("Mittel");
+			JRadioButtonMenuItem modusSchwer = new JRadioButtonMenuItem("Schwer");
+			modusEinfach.addActionListener(new MenuListener());
+			modusMittel.addActionListener(new MenuListener());
+			modusSchwer.addActionListener(new MenuListener());
+			group.add(modusEinfach);
+			group.add(modusMittel);
+			group.add(modusSchwer);
+			menuInMenu.add(modusEinfach);
+			menuInMenu.add(modusMittel);
+			menuInMenu.add(modusSchwer);
+			menu.add(menuInMenu);
 			menu.add(item);
+			menu.add(item2);
+//			menu.add(item2);
 			frame.setJMenuBar(menuBar);
 
 			createAndAddPanel();
@@ -64,29 +85,30 @@ public class Board implements MouseListener {
 			frame.remove(panel);
 			frame.remove(label);
 		}
-		realBoard = new boolean[realBoard.length][realBoard.length];
+		realBoard = new boolean[nextGameSize][nextGameSize];
 		// placeBombs(numberOfBombs);
 		panel = new JPanel();
 		panel.setBackground(Color.white);
-		panel.setLayout(new GridLayout(realBoard.length, realBoard.length));
+		panel.setLayout(new GridLayout(nextGameSize, nextGameSize));
 		buttons = new LinkedList<Field>();
 
 		int x = 0;
 		int y = 0;
-		for (int i = 0; i < realBoard.length * realBoard.length; i++) {
+		for (int i = 0; i < nextGameSize * nextGameSize; i++) {
 			buttons.add(new Field(x + 1, y + 1, realBoard[x][y]));
 			panel.add(buttons.get(i));
 			buttons.get(i).addMouseListener(this);
-			buttons.get(i).setFont(new Font("Monospaced", Font.ITALIC, 12));
+			buttons.get(i).setFont(new Font("Monospaced", Font.ITALIC, 28));
 			buttons.get(i).setMargin(new Insets(0, 0, 0, 0));
-			if (x < realBoard.length - 1) {
+			if (x < nextGameSize - 1) {
 				x++;
 			} else {
 				x = 0;
 				y++;
 			}
 		}
-		label = new JLabel("Noch zu findende Bomben:   " +numberOfBombs);
+		label = new JLabel("Noch zu findende Bomben:   " +nextGameBombs);
+		numberOfBombs = nextGameBombs;
 		bombsLeft = numberOfBombs;
 		label.setBackground(Color.WHITE);
 		frame.add(label, BorderLayout.SOUTH);
@@ -197,16 +219,9 @@ public class Board implements MouseListener {
 		for (Field f : buttons) {
 			f.removeMouseListener(this);
 			if (f.isBomb()) {
-				Image img;
-				try {
-					img = ImageIO.read(getClass().getResource("pictures/Bombe.png"));
-					f.setIcon(new ImageIcon(img.getScaledInstance(
+					f.setIcon(new ImageIcon(f.getImg().getScaledInstance(
 							(int)((Math.min(frame.getHeight(), frame.getWidth()) / realBoard.length)/1.25),
 							(int)((Math.min(frame.getHeight(), frame.getWidth()) / realBoard.length)/1.25), Image.SCALE_FAST)));
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
 
 			}
 		}
@@ -338,6 +353,34 @@ public class Board implements MouseListener {
 				}
 			}
 		}
+	}
+	
+	private class MenuListener implements ActionListener{
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if(e.getSource() instanceof JMenuItem) {
+				if(((JMenuItem)e.getSource()).getText().equals("Neustart")) {
+					restart();
+				}else if(((JMenuItem)e.getSource()).getText().equals("Spiel beenden")){
+					System.exit(0);
+				}else if(((JMenuItem)e.getSource()).getText().equals("Einfach")){
+					nextGameSize=8;
+					nextGameBombs=10;
+				}else if(((JMenuItem)e.getSource()).getText().equals("Mittel")){
+					nextGameSize=16;
+					nextGameBombs=40;
+				}else if(((JMenuItem)e.getSource()).getText().equals("Schwer")){
+					nextGameSize=20;
+					nextGameBombs=80;
+				}
+			}else {
+				System.err.println("Wurde ein falscher Button diesem Listener hinzugefügt? Dieser Listener ist nur für das Menü gedacht.");
+			}
+			
+			
+		}
+		
 	}
 
 }

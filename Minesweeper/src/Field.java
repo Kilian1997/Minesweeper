@@ -1,3 +1,7 @@
+import java.awt.Image;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
 import javax.swing.JButton;
 
 public class Field extends JButton{
@@ -5,14 +9,27 @@ public class Field extends JButton{
 	private int x;
 	private int y;
 	private boolean isBomb;
+	private Image img;
 	
 	public Field (int x,int y, boolean bomb) {
 		super();
 		this.x = x;
 		this.y=y;
 		this.isBomb=bomb;
+		
 	}
 	
+
+	public Image getImg() {
+
+		return img;
+	}
+
+
+	public void setImg(Image img) {
+		this.img = img;
+	}
+
 
 	public int getPositionX() {
 		return x;
@@ -35,6 +52,17 @@ public class Field extends JButton{
 	}
 
 	public void setBomb(boolean isBomb) {
+		if(isBomb) {
+			try {
+				img = ImageIO.read(getClass().getResource("pictures/Bombe.png"));
+//				f.setIcon(new ImageIcon(img.getScaledInstance(
+//						(int)((Math.min(frame.getHeight(), frame.getWidth()) / realBoard.length)/1.25),
+//						(int)((Math.min(frame.getHeight(), frame.getWidth()) / realBoard.length)/1.25), Image.SCALE_FAST)));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		this.isBomb = isBomb;
 	}
 
