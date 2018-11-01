@@ -250,6 +250,7 @@ public class Board implements MouseListener {
 			if (field.isBomb()) {
 				loose();
 			} else {
+				field.setIcon(null);
 				field.setText(bombsNextby(field.getPositionX() - 1, field.getPositionY() - 1) + "");
 				if (field.getText().equals("0")) {
 					field.setText("");
