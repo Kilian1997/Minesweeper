@@ -26,31 +26,31 @@ public class Board implements MouseListener {
 		if (bombs + 9 > size * size) {
 			throw new IllegalArgumentException("Mehr Bomben als Felder.");
 		} else {
-			nextGameSize=size;
-			nextGameBombs=bombs;
+			nextGameSize = size;
+			nextGameBombs = bombs;
 			bombsGenerated = false;
 			numberOfBombs = bombs;
 			realBoard = new boolean[size][size];
-			frame = new JFrame("Kilians Minesweeper");
+			frame = new JFrame("KK-Sweeper");
 			frame.setSize(600, 600);
 			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			frame.setResizable(true);
 			frame.setLocationRelativeTo(null);
 			menuBar = new JMenuBar();
-			JMenu menu = new JMenu("Game");
+			JMenu menu = new JMenu("Optionen");
 			menuBar.add(menu);
 			JMenuItem item = new JMenuItem("Neustart");
 			JMenuItem item2 = new JMenuItem("Spiel beenden");
 			JMenu menuInMenu = new JMenu("Modus");
-			
-//			JMenuItem item2 = new JMenuItem("Schriftgröße");
-//			item2.add (new JSlider(8,45,20));
+
+			// JMenuItem item2 = new JMenuItem("Schriftgröße");
+			// item2.add (new JSlider(8,45,20));
 			item.addActionListener(new MenuListener());
-			
+
 			item2.addActionListener(new MenuListener());
-			
+
 			ButtonGroup group = new ButtonGroup();
-			JRadioButtonMenuItem modusEinfach = new JRadioButtonMenuItem("Einfach (8x8)",true);
+			JRadioButtonMenuItem modusEinfach = new JRadioButtonMenuItem("Einfach (8x8)", true);
 			JRadioButtonMenuItem modusMittel = new JRadioButtonMenuItem("Mittel (14x14)");
 			JRadioButtonMenuItem modusSchwer = new JRadioButtonMenuItem("Schwer (20x20)");
 			modusEinfach.addActionListener(new MenuListener());
@@ -65,23 +65,26 @@ public class Board implements MouseListener {
 			menu.add(menuInMenu);
 			menu.add(item);
 			menu.add(item2);
-//			menu.add(item2);
+			// menu.add(item2);
 			frame.setJMenuBar(menuBar);
+			frame.setVisible(true);
+			JProgressBar ladebalken = new JProgressBar(0, 400);
+			ladebalken.setValue(0);
+			ladebalken.setStringPainted(true);
+			frame.add(ladebalken, BorderLayout.CENTER);
+			buttons = new LinkedList<Field>();
+			for (int i = 0; i < 20 * 20; i++) {
+				ladebalken.setValue(i);
+				buttons.add(new Field(0, 0, false));
+			}
+			frame.remove(ladebalken);
 
 			createAndAddPanel();
-
-			// Ausgabe des Boards zu Testzweckens
-			// for(int i=0;i<realBoard.length;i++) {
-			// for(int a=0;a<realBoard.length;a++) {
-			// System.out.print(realBoard[i][a]+", ");
-			// }
-			// System.out.println();
-			// }
 		}
 	}
 
 	private void createAndAddPanel() {
-		if (panel != null || label !=null) {
+		if (panel != null || label != null) {
 			frame.remove(panel);
 			frame.remove(label);
 		}
@@ -90,12 +93,18 @@ public class Board implements MouseListener {
 		panel = new JPanel();
 		panel.setBackground(Color.white);
 		panel.setLayout(new GridLayout(nextGameSize, nextGameSize));
-		buttons = new LinkedList<Field>();
 
 		int x = 0;
 		int y = 0;
 		for (int i = 0; i < nextGameSize * nextGameSize; i++) {
-			buttons.add(new Field(x + 1, y + 1, realBoard[x][y]));
+			buttons.get(i).setText("");
+			buttons.get(i).setIcon(null);
+			buttons.get(i).setEnabled(true);
+			buttons.get(i).setPositionX(x + 1);
+			buttons.get(i).setPositionY(y + 1);
+			buttons.get(i).setInGame(true);
+			buttons.get(i).setBomb(realBoard[x][y]);
+			// buttons.add(new Field(x + 1, y + 1, realBoard[x][y]));
 			panel.add(buttons.get(i));
 			buttons.get(i).addMouseListener(this);
 			buttons.get(i).setFont(new Font("Monospaced", Font.ITALIC, 28));
@@ -107,13 +116,13 @@ public class Board implements MouseListener {
 				y++;
 			}
 		}
-		label = new JLabel("Noch zu findende Bomben:   " +nextGameBombs);
+		label = new JLabel("Noch zu findende Bomben:   " + nextGameBombs);
 		numberOfBombs = nextGameBombs;
 		bombsLeft = numberOfBombs;
 		label.setBackground(Color.WHITE);
 		frame.add(label, BorderLayout.SOUTH);
 		frame.add(panel, BorderLayout.CENTER);
-		
+
 		frame.setVisible(true);
 	}
 
@@ -126,12 +135,11 @@ public class Board implements MouseListener {
 					&& !(p1 == f.getPositionX() && p2 == f.getPositionY() - 1)
 					&& !(p1 == f.getPositionX() && p2 == f.getPositionY())
 					&& !(p1 == f.getPositionX() && p2 == f.getPositionY() - 2)
-					&& !(p1 == f.getPositionX()-2 && p2 == f.getPositionY() - 1)
-					&& !(p1 == f.getPositionX()-2 && p2 == f.getPositionY() )
-					&& !(p1 == f.getPositionX()-2 && p2 == f.getPositionY() - 2)
+					&& !(p1 == f.getPositionX() - 2 && p2 == f.getPositionY() - 1)
+					&& !(p1 == f.getPositionX() - 2 && p2 == f.getPositionY())
+					&& !(p1 == f.getPositionX() - 2 && p2 == f.getPositionY() - 2)
 					&& !(p1 == f.getPositionX() - 1 && p2 == f.getPositionY())
-					&& !(p1 == f.getPositionX() - 1 && p2 == f.getPositionY() - 2)
-					) { // funzt nicht!!!!!
+					&& !(p1 == f.getPositionX() - 1 && p2 == f.getPositionY() - 2)) { // funzt nicht!!!!!
 				realBoard[p1][p2] = true;
 				numberOfBombs--;
 			}
@@ -151,29 +159,31 @@ public class Board implements MouseListener {
 
 	private int bombsNextby(int x, int y) {
 		int result = 0;
-		if (x + 1 <= realBoard.length - 1 && realBoard[x + 1][y]) {
-			result++;
-		}
-		if (x + 1 <= realBoard.length - 1 && y + 1 <= realBoard[x + 1].length - 1 && realBoard[x + 1][y + 1]) {
-			result++;
-		}
-		if (x + 1 <= realBoard.length - 1 && y - 1 >= 0 && realBoard[x + 1][y - 1]) {
-			result++;
-		}
-		if (x - 1 >= 0 && y - 1 >= 0 && realBoard[x - 1][y - 1]) {
-			result++;
-		}
-		if (x - 1 >= 0 && y + 1 <= realBoard[x - 1].length - 1 && realBoard[x - 1][y + 1]) {
-			result++;
-		}
-		if (x - 1 >= 0 && realBoard[x - 1][y]) {
-			result++;
-		}
-		if (y + 1 <= realBoard[x].length - 1 && realBoard[x][y + 1]) {
-			result++;
-		}
-		if (y - 1 >= 0 && realBoard[x][y - 1]) {
-			result++;
+		if (x >= 0 && y >= 0) {
+			if (x + 1 <= realBoard.length - 1 && realBoard[x + 1][y]) {
+				result++;
+			}
+			if (x + 1 <= realBoard.length - 1 && y + 1 <= realBoard[x + 1].length - 1 && realBoard[x + 1][y + 1]) {
+				result++;
+			}
+			if (x + 1 <= realBoard.length - 1 && y - 1 >= 0 && realBoard[x + 1][y - 1]) {
+				result++;
+			}
+			if (x - 1 >= 0 && y - 1 >= 0 && realBoard[x - 1][y - 1]) {
+				result++;
+			}
+			if (x - 1 >= 0 && y + 1 <= realBoard[x - 1].length - 1 && realBoard[x - 1][y + 1]) {
+				result++;
+			}
+			if (x - 1 >= 0 && realBoard[x - 1][y]) {
+				result++;
+			}
+			if (y + 1 <= realBoard[x].length - 1 && realBoard[x][y + 1]) {
+				result++;
+			}
+			if (y - 1 >= 0 && realBoard[x][y - 1]) {
+				result++;
+			}
 		}
 		return result;
 	}
@@ -206,10 +216,11 @@ public class Board implements MouseListener {
 			}
 		}
 	}
-	
-	private void restart () {
+
+	private void restart() {
 		for (Field f : buttons) {
 			f.removeMouseListener(this);
+			f.setInGame(false);
 		}
 		bombsGenerated = false;
 		createAndAddPanel();
@@ -219,9 +230,10 @@ public class Board implements MouseListener {
 		for (Field f : buttons) {
 			f.removeMouseListener(this);
 			if (f.isBomb()) {
-					f.setIcon(new ImageIcon(f.getImg().getScaledInstance(
-							(int)((Math.min(frame.getHeight(), frame.getWidth()) / realBoard.length)/1.25),
-							(int)((Math.min(frame.getHeight(), frame.getWidth()) / realBoard.length)/1.25), Image.SCALE_FAST)));
+				f.setIcon(new ImageIcon(f.getImg().getScaledInstance(
+						(int) ((Math.min(frame.getHeight(), frame.getWidth()) / realBoard.length) / 1.25),
+						(int) ((Math.min(frame.getHeight(), frame.getWidth()) / realBoard.length) / 1.25),
+						Image.SCALE_FAST)));
 
 			}
 		}
@@ -261,52 +273,19 @@ public class Board implements MouseListener {
 
 	private boolean checkGameWon() {
 		for (Field f : buttons) {
-			if (!f.isBomb() && f.isEnabled()) {
+			if (!f.isBomb() && f.isEnabled() && f.isInGame()) {
 				return false;
 			}
 		}
 		return true;
 	}
 
-	@Override
-	// public void actionPerformed(ActionEvent e) {
-	//
-	// for(Field b : buttons) {
-	// if(e.getSource().equals(b)) {
-	// b.setEnabled(false);
-	// System.out.println("x: "+b.getPositionX()+", y: "+b.getPositionY());
-	// if(realBoard[b.getPositionX()-1][b.getPositionY()-1]) {
-	//
-	// b.setText("Bombe");
-	// }else {
-	// b.setText(""+bombsNextby(b.getPositionX()-1, b.getPositionY()-1));
-	// if(bombsNextby(b.getPositionX()-1, b.getPositionY()-1)==0) {
-	// clickAllAround(b.getPositionX(), b.getPositionY());
-	// }
-	// }
-	//
-	// }
-	// }
-	// System.out.println(e.getActionCommand());
-	// System.out.println(e.getSource());
-	// System.out.println(e.toString());
-	// buttons.get(0).setEnabled(false);
-	// panel.remove(0);
-	// frame.repaint();
-	// frame.remove(panel);
-	// frame.add(panel);
-	// frame.repaint();
-	// }
-
 	public void mouseClicked(MouseEvent e) {
-
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -317,70 +296,75 @@ public class Board implements MouseListener {
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		
 
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		for (Field b : buttons) {
-			if (e.getSource().equals(b) && b.isEnabled()) {
+		if (e.getX() >= 0 && e.getY() >= 0) {
 
-				if (SwingUtilities.isRightMouseButton(e)) {
-					if (b.getIcon() != null) {
-						bombsLeft++;
-						b.setIcon(null);
-					} else if(bombsLeft>0) {
-						try {
-							Image img = ImageIO.read(getClass().getResource("pictures/Fahne.png"));
-							b.setIcon(new ImageIcon(img.getScaledInstance(
-									(int) ((Math.min(frame.getHeight(), frame.getWidth()) / realBoard.length) / 1.75),
-									(int) ((Math.min(frame.getHeight(), frame.getWidth()) / realBoard.length) / 1.75),
-									Image.SCALE_FAST)));
-							bombsLeft--;
-						} catch (IOException error) {
-							// TODO Auto-generated catch block
-							error.printStackTrace();
+			for (Field b : buttons) {
+				if (e.getSource().equals(b) && b.isEnabled()) {
+					if (e.getX() <= b.getSize().getWidth() && e.getY() <= b.getSize().getHeight()) {
+						if (SwingUtilities.isRightMouseButton(e)) {
+							if (b.getIcon() != null) {
+								bombsLeft++;
+								b.setIcon(null);
+							} else if (bombsLeft > 0) {
+								try {
+									Image img = ImageIO.read(getClass().getResource("pictures/Fahne.png"));
+									b.setIcon(new ImageIcon(img.getScaledInstance(
+											(int) ((Math.min(frame.getHeight(), frame.getWidth()) / realBoard.length)
+													/ 1.75),
+											(int) ((Math.min(frame.getHeight(), frame.getWidth()) / realBoard.length)
+													/ 1.75),
+											Image.SCALE_FAST)));
+									bombsLeft--;
+								} catch (IOException error) {
+									System.err.println("Bild konnte nicht geladen werden!");
+									error.printStackTrace();
+								}
+							}
+							label.setText("Noch zu findende Bomben:   " + bombsLeft);
+						} else if (b.getIcon() == null) {
+							if (!bombsGenerated) {
+								placeBombs(numberOfBombs, b);
+							}
+							pressField(b);
+
 						}
 					}
-					label.setText("Noch zu findende Bomben:   "+ bombsLeft);
-				} else if (b.getIcon() == null) {
-					if (!bombsGenerated) {
-						placeBombs(numberOfBombs, b);
-					}
-					pressField(b);
-
 				}
 			}
 		}
 	}
-	
-	private class MenuListener implements ActionListener{
+
+	private class MenuListener implements ActionListener {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			if(e.getSource() instanceof JMenuItem) {
-				if(((JMenuItem)e.getSource()).getText().equals("Neustart")) {
+			if (e.getSource() instanceof JMenuItem) {
+				if (((JMenuItem) e.getSource()).getText().equals("Neustart")) {
 					restart();
-				}else if(((JMenuItem)e.getSource()).getText().equals("Spiel beenden")){
+				} else if (((JMenuItem) e.getSource()).getText().equals("Spiel beenden")) {
 					System.exit(0);
-				}else if(((JMenuItem)e.getSource()).getText().equals("Einfach (8x8)")){
-					nextGameSize=8;
-					nextGameBombs=10;
-				}else if(((JMenuItem)e.getSource()).getText().equals("Mittel (14x14)")){
-					nextGameSize=14;
-					nextGameBombs=32;
-				}else if(((JMenuItem)e.getSource()).getText().equals("Schwer (20x20)")){
-					nextGameSize=20;
-					nextGameBombs=80;
+				} else if (((JMenuItem) e.getSource()).getText().equals("Einfach (8x8)")) {
+					nextGameSize = 8;
+					nextGameBombs = 10;
+				} else if (((JMenuItem) e.getSource()).getText().equals("Mittel (14x14)")) {
+					nextGameSize = 14;
+					nextGameBombs = 32;
+				} else if (((JMenuItem) e.getSource()).getText().equals("Schwer (20x20)")) {
+					nextGameSize = 20;
+					nextGameBombs = 80;
 				}
-			}else {
-				System.err.println("Wurde ein falscher Button diesem Listener hinzugefügt? Dieser Listener ist nur für das Menü gedacht.");
+			} else {
+				System.err.println(
+						"Wurde ein falscher Button diesem Listener hinzugefügt? Dieser Listener ist nur für das Menü gedacht.");
 			}
-			
-			
+
 		}
-		
+
 	}
 
 }
