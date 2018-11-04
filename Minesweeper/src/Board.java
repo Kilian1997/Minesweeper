@@ -380,12 +380,15 @@ public class Board implements MouseListener {
 				} else if (((JMenuItem) e.getSource()).getText().equals("Einfach (8x8)")) {
 					nextGameSize = 8;
 					nextGameBombs = 10;
+					restart();
 				} else if (((JMenuItem) e.getSource()).getText().equals("Mittel (14x14)")) {
 					nextGameSize = 14;
 					nextGameBombs = 32;
+					restart();
 				} else if (((JMenuItem) e.getSource()).getText().equals("Schwer (20x20)")) {
 					nextGameSize = 20;
 					nextGameBombs = 80;
+					restart();
 				}else if (((JMenuItem) e.getSource()).getText().equals("Anleitung")) {
 
 					FileReader fr;
