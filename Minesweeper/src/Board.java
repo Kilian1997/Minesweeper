@@ -3,6 +3,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.LinkedList;
 import javax.imageio.ImageIO;
@@ -21,8 +25,9 @@ public class Board implements MouseListener {
 	private JMenuBar menuBar;
 	private int nextGameSize;
 	private int nextGameBombs;
+	private boolean flagNoClickingAround;
 
-	public Board(int size, int bombs) {
+	public Board(int size, int bombs) throws IOException {
 		if (bombs + 9 > size * size) {
 			throw new IllegalArgumentException("Mehr Bomben als Felder.");
 		} else {
@@ -66,6 +71,17 @@ public class Board implements MouseListener {
 			menu.add(item);
 			menu.add(item2);
 			// menu.add(item2);
+			
+			JMenu menu2 = new JMenu ("Help");
+			menuBar.add(menu2);
+			JMenuItem item3 = new JMenuItem("Anleitung");
+			menu2.add(item3);
+			item3.addActionListener(new MenuListener());
+			JMenuItem item4 = new JMenuItem("Credits");
+			menu2.add(item4);
+			item4.addActionListener(new MenuListener());
+			
+			
 			frame.setJMenuBar(menuBar);
 			frame.setVisible(true);
 			JProgressBar ladebalken = new JProgressBar(0, 400);
@@ -73,9 +89,10 @@ public class Board implements MouseListener {
 			ladebalken.setStringPainted(true);
 			frame.add(ladebalken, BorderLayout.CENTER);
 			buttons = new LinkedList<Field>();
+			Image img = ImageIO.read(getClass().getResource("pictures/Bombe.png"));
 			for (int i = 0; i < 20 * 20; i++) {
 				ladebalken.setValue(i);
-				buttons.add(new Field(0, 0, false));
+				buttons.add(new Field(0, 0, false,img));
 			}
 			frame.remove(ladebalken);
 
@@ -88,6 +105,7 @@ public class Board implements MouseListener {
 			frame.remove(panel);
 			frame.remove(label);
 		}
+		flagNoClickingAround = true;
 		realBoard = new boolean[nextGameSize][nextGameSize];
 		// placeBombs(numberOfBombs);
 		panel = new JPanel();
@@ -127,6 +145,7 @@ public class Board implements MouseListener {
 	}
 
 	private void placeBombs(int numberOfBombs, Field f) {
+		flagNoClickingAround=false;
 		bombsGenerated = true;
 		while (numberOfBombs > 0) {
 			int p1 = (int) (Math.random() * realBoard.length);
@@ -190,28 +209,28 @@ public class Board implements MouseListener {
 
 	private void clickAllAround(int x, int y) {
 		for (Field f : buttons) {
-			if (f.getPositionX() + 1 == x && f.getPositionY() == y) {
+			if (f.getPositionX() + 1 == x && f.getPositionY() == y && !flagNoClickingAround) {
 				pressField(f);
 			}
-			if (f.getPositionX() - 1 == x && f.getPositionY() == y) {
+			else if (f.getPositionX() - 1 == x && f.getPositionY() == y && !flagNoClickingAround) {
 				pressField(f);
 			}
-			if (f.getPositionX() == x && f.getPositionY() + 1 == y) {
+			else if (f.getPositionX() == x && f.getPositionY() + 1 == y && !flagNoClickingAround) {
 				pressField(f);
 			}
-			if (f.getPositionX() == x && f.getPositionY() - 1 == y) {
+			else if (f.getPositionX() == x && f.getPositionY() - 1 == y && !flagNoClickingAround) {
 				pressField(f);
 			}
-			if (f.getPositionX() + 1 == x && f.getPositionY() + 1 == y) {
+			else if (f.getPositionX() + 1 == x && f.getPositionY() + 1 == y && !flagNoClickingAround) {
 				pressField(f);
 			}
-			if (f.getPositionX() + 1 == x && f.getPositionY() - 1 == y) {
+			else if (f.getPositionX() + 1 == x && f.getPositionY() - 1 == y && !flagNoClickingAround) {
 				pressField(f);
 			}
-			if (f.getPositionX() - 1 == x && f.getPositionY() + 1 == y) {
+			else if (f.getPositionX() - 1 == x && f.getPositionY() + 1 == y && !flagNoClickingAround) {
 				pressField(f);
 			}
-			if (f.getPositionX() - 1 == x && f.getPositionY() - 1 == y) {
+			else if (f.getPositionX() - 1 == x && f.getPositionY() - 1 == y && !flagNoClickingAround) {
 				pressField(f);
 			}
 		}
@@ -241,6 +260,8 @@ public class Board implements MouseListener {
 				JOptionPane.YES_NO_OPTION);
 		if (again == 0) {
 			restart();
+		}else {
+			flagNoClickingAround=true;
 		}
 	}
 
@@ -267,18 +288,24 @@ public class Board implements MouseListener {
 				}
 				if (again == 0) {
 					restart();
+				}else {
+					flagNoClickingAround=true;
 				}
 			}
 		}
 	}
 
 	private boolean checkGameWon() {
+		if(flagNoClickingAround==false) {
 		for (Field f : buttons) {
 			if (!f.isBomb() && f.isEnabled() && f.isInGame()) {
 				return false;
 			}
 		}
 		return true;
+		}else {
+			return false;
+		}
 	}
 
 	public void mouseClicked(MouseEvent e) {
@@ -344,6 +371,7 @@ public class Board implements MouseListener {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
+
 			if (e.getSource() instanceof JMenuItem) {
 				if (((JMenuItem) e.getSource()).getText().equals("Neustart")) {
 					restart();
@@ -358,6 +386,28 @@ public class Board implements MouseListener {
 				} else if (((JMenuItem) e.getSource()).getText().equals("Schwer (20x20)")) {
 					nextGameSize = 20;
 					nextGameBombs = 80;
+				}else if (((JMenuItem) e.getSource()).getText().equals("Anleitung")) {
+
+					FileReader fr;
+					try {
+						String anleitung ="";
+						String zeile ="";
+						File file = new File("Anleitung.txt");
+						fr = new FileReader(file);
+						System.out.println("_----------------------------------------------------");
+						 BufferedReader br = new BufferedReader(fr);
+						 while( (zeile = br.readLine()) != null ) {
+								anleitung += zeile+"\n";
+							}
+						 br.close();
+						 JOptionPane.showMessageDialog(frame, anleitung,"Anleitung",JOptionPane.INFORMATION_MESSAGE);
+					} catch (IOException e1) {
+						e1.printStackTrace();
+						JOptionPane.showMessageDialog(frame, "Anleitung konnte nicht geladen werden.", "Anleitung",JOptionPane.INFORMATION_MESSAGE);
+					}
+					
+				}else if (((JMenuItem) e.getSource()).getText().equals("Credits")) {
+					JOptionPane.showMessageDialog(frame, "Ein Spiel von Kilian Kraus mit Grafiken von Sandra xxx","Credits",JOptionPane.INFORMATION_MESSAGE);
 				}
 			} else {
 				System.err.println(

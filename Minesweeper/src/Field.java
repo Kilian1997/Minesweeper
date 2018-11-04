@@ -35,6 +35,17 @@ public class Field extends JButton{
 		
 	}
 	
+	public Field (int x,int y, boolean bomb, Image img) {
+		super();
+		this.x = x;
+		this.y=y;
+		this.isBomb=bomb;
+		inGame=false;
+		this.img = img;
+		
+		
+	}
+	
 	public boolean isInGame() {
 		return inGame;
 	}
