@@ -413,7 +413,7 @@ public class Board implements MouseListener {
 					}
 					
 				}else if (((JMenuItem) e.getSource()).getText().equals("Credits")) {
-					JOptionPane.showMessageDialog(frame, "Ein Spiel von Kilian Kraus mit Grafiken von Sandra xxx","Credits",JOptionPane.INFORMATION_MESSAGE);
+					JOptionPane.showMessageDialog(frame, "Ein Spiel von Kilian Kraus mit Lizensfreien Grafiken von Pixabay.com","Credits",JOptionPane.INFORMATION_MESSAGE);
 				}
 			} else {
 				System.err.println(
