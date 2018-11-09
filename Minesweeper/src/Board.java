@@ -256,7 +256,7 @@ public class Board implements MouseListener {
 
 			}
 		}
-		int again = JOptionPane.showConfirmDialog(null, "Leider Verloren\nWollen Sie es nochmal versuchen?", "Verloren",
+		int again = JOptionPane.showConfirmDialog(frame, "Leider Verloren\nWollen Sie es nochmal versuchen?", "Verloren",
 				JOptionPane.YES_NO_OPTION);
 		if (again == 0) {
 			restart();
@@ -283,7 +283,7 @@ public class Board implements MouseListener {
 			}
 
 			if (checkGameWon()) {
-				int again = JOptionPane.showConfirmDialog(null,
+				int again = JOptionPane.showConfirmDialog(frame,
 						"Herzlichen Glückwunsch, Sie haben gewonnen!\nWollen Sie nocheinmal spielen?", "Gewonnen",
 						JOptionPane.YES_NO_OPTION);
 				for (Field f : buttons) {
