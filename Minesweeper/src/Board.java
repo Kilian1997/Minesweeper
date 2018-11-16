@@ -298,6 +298,7 @@ public class Board implements MouseListener {
 					restart();
 				}else {
 					flagNoClickingAround=true;
+					System.exit(0);
 				}
 			}
 		}
