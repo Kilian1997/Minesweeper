@@ -246,13 +246,17 @@ public class Board implements MouseListener {
 	}
 
 	private void loose() {
+		ImageIcon scaledImg = null;
 		for (Field f : buttons) {
+			if(scaledImg==null) {
+				scaledImg = new ImageIcon(f.getImg().getScaledInstance(
+						(int) ((Math.min(frame.getHeight(), frame.getWidth()) / realBoard.length) / 1.25),
+						(int) ((Math.min(frame.getHeight(), frame.getWidth()) / realBoard.length) / 1.25),
+						Image.SCALE_FAST));
+			}
 			f.removeMouseListener(this);
 			if (f.isBomb()) {
-				f.setIcon(new ImageIcon(f.getImg().getScaledInstance(
-						(int) ((Math.min(frame.getHeight(), frame.getWidth()) / realBoard.length) / 1.25),
-						(int) ((Math.min(frame.getHeight(), frame.getWidth()) / realBoard.length) / 1.25),
-						Image.SCALE_FAST)));
+				f.setIcon(scaledImg);
 
 			}
 		}
@@ -261,6 +265,7 @@ public class Board implements MouseListener {
 		if (again == 0) {
 			restart();
 		}else {
+			System.exit(0);
 			flagNoClickingAround=true;
 		}
 	}
